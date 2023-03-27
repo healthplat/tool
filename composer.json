@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "healthplat\\tool\\": "src/"
+            "Healthplat\\Tool\\": "src/"
         },
         "files": [
             "helpers.php"

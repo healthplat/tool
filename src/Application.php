@@ -2,7 +2,7 @@
 
 namespace Healthplat\Tool;
 
-use App\Providers\RouteProvider;
+use Healthplat\Tool\Providers\RouteProvider;
 use Healthplat\Tool\Providers\ConfigProvider;
 
 /**

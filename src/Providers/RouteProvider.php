@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace Healthplat\Tool\Providers;
 
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Mvc\Router;
