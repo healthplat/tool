@@ -1,14 +1,12 @@
 <?php
-/**
- * @author wsfuyibing <websearch@163.com>
- * @date 2018-03-21
- */
+
 namespace Healthplat\Tool\Logics;
 
-use Uniondrug\Structs\StructInterface;
+
+use Healthplat\Tool\Structs\StructInterface;
 
 /**
- * @package Uniondrug\Framework\Logics
+ * @package Healthplat\Tool\Logics
  */
 interface LogicInterface
 {

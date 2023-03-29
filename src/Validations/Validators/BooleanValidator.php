@@ -1,9 +1,5 @@
 <?php
-/**
- * 框架级Validator
- * @author wsfuyibing <websearch@163.com>
- * @date   2018-08-27
- */
+
 namespace Healthplat\Tool\Validations\Validators;
 
 

@@ -11,7 +11,7 @@ use RuntimeException;
 
 /**
  * Class Client
- * @package Uniondrug\Redis
+ * @package Healthplat\Tool
  */
 class Client
 {

@@ -6,7 +6,7 @@ use Healthplat\Tool\Services\ServiceTrait;
 
 /**
  * 控制器
- * @package Uniondrug\Framework\Logics
+ * @package Healthplat\Tool\Controllers
  */
 abstract class Controller extends \Phalcon\Mvc\Controller
 {

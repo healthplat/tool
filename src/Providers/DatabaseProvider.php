@@ -1,8 +1,4 @@
 <?php
-/**
- * @author wsfuyibing <websearch@163.com>
- * @date   2019-04-10
- */
 
 namespace Healthplat\Tool\Providers;
 

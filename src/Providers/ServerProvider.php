@@ -5,9 +5,6 @@ namespace Healthplat\Tool\Providers;
 use Healthplat\Tool\HttpClient;
 use Healthplat\Tool\Response;
 use Phalcon\Di\ServiceProviderInterface;
-use Phalcon\Mvc\Router;
-use Phalcon\Support\HelperFactory;
-use Uniondrug\Service\Server;
 
 /**
  * @package App\Providers

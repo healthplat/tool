@@ -1,17 +1,13 @@
 <?php
-/**
- * @author wsfuyibing <websearch@163.com>
- * @date   2018-06-14
- */
+
 namespace Healthplat\Tool\Logics;
 
 use Healthplat\Tool\Services\ServiceTrait;
 use stdClass;
-use Uniondrug\Framework\Injectable;
 
 /**
  * 业务逻辑抽像
- * @package Uniondrug\Framework\Logics
+ * @package Healthplat\Tool\Logics
  */
 abstract class Logic extends \Phalcon\Di\Injectable implements LogicInterface
 {

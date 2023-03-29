@@ -8,7 +8,7 @@ use RuntimeException;
 
 /**
  * Class HttpClient
- * @package Uniondrug\Redis
+ * @package Healthplat\Tool
  */
 class HttpClient extends \GuzzleHttp\Client
 {

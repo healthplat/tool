@@ -1,9 +1,4 @@
 <?php
-/**
- * @author wsfuyibing <websearch@163.com>
- * @date   2018-12-25
- */
-
 namespace Healthplat\Tool\Providers;
 use Phalcon\Config\Config;
 use Phalcon\Di\ServiceProviderInterface;
@@ -11,7 +6,7 @@ use Phalcon\Support\HelperFactory;
 
 /**
  * 初始化系统配置
- * @package Uniondrug\Framework\Providers
+ * @package Healthplat\Tool\Providers
  */
 class ConfigProvider implements ServiceProviderInterface
 {

@@ -24,9 +24,6 @@ class RedisProvider implements ServiceProviderInterface
     {
         /**
          * 调整配置兼容
-         * @author wsfuyibing <webserach@163.com>
-         * @date   2019-02-21
-         * @var Config $config
          */
         $config = $di->getConfig()->path('redis');
         // 1. Redis对象
