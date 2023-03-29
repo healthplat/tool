@@ -24,13 +24,15 @@ class Application extends \Phalcon\Mvc\Application
     {
         // 初始化服务
         foreach ($this->providers as $provider) {
-            $this->register(new $provider());
+            (new $provider())->register($container);
         }
         // 理论上上面已经注册过config服务 应该能直接调用
         $providers = $this->config->path('app.providers');
         foreach ($providers as $provider) {
-            $this->register(new $provider());
+            (new $provider())->register($container);
         }
+        // request请求对象初始化
+        $container->setShared('request', new Request());
         $this->useImplicitView(false);
     }
 }

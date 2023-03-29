@@ -3,9 +3,9 @@
  * @author wsfuyibing <websearch@163.com>
  * @date   2018-12-25
  */
-namespace Healthplat\Tool\Providers;
 
-use Phalcon\Config;
+namespace Healthplat\Tool\Providers;
+use Phalcon\Config\Config;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Support\HelperFactory;
 
@@ -18,17 +18,17 @@ class ConfigProvider implements ServiceProviderInterface
     /**
      * @param \Phalcon\DiInterface $di
      */
-    public function register(\Phalcon\Di\DiInterface $di) : void
+    public function register(\Phalcon\Di\DiInterface $di): void
     {
-        $di->setShared('config', function(){
-            $env = env();
+        $di->setShared('config', function () {
+            $env = env('APP_ENV', 'development');
             $config = new Config([]);
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(getConfigPath()), \RecursiveIteratorIterator::SELF_FIRST);
+            $helper = new HelperFactory();
             foreach ($iterator as $item) {
-                $helper = new HelperFactory();
                 if ($helper->endsWith($item, '.php', false)) {
                     $name = str_replace([
-                        getConfigPath().DIRECTORY_SEPARATOR,
+                        getConfigPath() . DIRECTORY_SEPARATOR,
                         '.php'
                     ], '', $item);
                     $data = include $item;
