@@ -2,6 +2,7 @@
 
 namespace Healthplat\Tool\Providers;
 
+use Healthplat\Tool\HttpClient;
 use Healthplat\Tool\Response;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Mvc\Router;
@@ -19,6 +20,12 @@ class ServerProvider implements ServiceProviderInterface
             'serviceServer',
             function () {
                 return new Response();
+            }
+        );
+        $di->setShared(
+            'httpClient',
+            function () {
+                return new HttpClient();
             }
         );
     }

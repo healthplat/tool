@@ -7,7 +7,7 @@
 namespace Healthplat\Tool\Providers;
 
 use Healthplat\Tool\Mysql;
-use Phalcon\Config;
+use Phalcon\Config\Config;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
 
@@ -41,20 +41,16 @@ class DatabaseProvider implements ServiceProviderInterface
          * @var Container $di
          */
         $config = $di->getConfig()->path('database.connection');
-        if (!($master instanceof Config)) {
+        if (!($config instanceof Config)) {
             return;
         }
         $adapter = $di->getConfig()->path('database.adapter');
-        // 2. register master
         $name = 'db';
         $pdo = $this->pdo[$adapter];
         $di->setShared($name, function () use ($di, $config, $name, $pdo) {
             unset($config->adapter);
             $dn = isset($config->dbname) ? $config->dbname : 'unknown';
-            $di->addSharedDatabase($name, $dn);
             $db = new $pdo($config->toArray());
-            $db->setSharedName($name);
-            $db->setSharedDbname($dn);
             return $db;
         });
     }

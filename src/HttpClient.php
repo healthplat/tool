@@ -10,6 +10,6 @@ use RuntimeException;
  * Class HttpClient
  * @package Uniondrug\Redis
  */
-class HttpClient
+class HttpClient extends \GuzzleHttp\Client
 {
 }
