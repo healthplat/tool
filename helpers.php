@@ -81,7 +81,7 @@ if (!function_exists('getAppPath')) {
      */
     function getAppPath()
     {
-        return getcwd().DIRECTORY_SEPARATOR.'app';
+        return getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'app';
     }
 }
 
@@ -91,6 +91,6 @@ if (!function_exists('getConfigPath')) {
      */
     function getConfigPath()
     {
-        return getcwd().DIRECTORY_SEPARATOR.'config';
+        return getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'config';
     }
 }
