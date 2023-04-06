@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": "^8.0",
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "aliyuncs/oss-sdk-php": "^2.4"
     },
     "autoload": {
         "psr-4": {
