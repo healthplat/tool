@@ -3,7 +3,7 @@ namespace Healthplat\Tool\Providers;
 
 use Healthplat\Tool\Client;
 use Healthplat\Tool\Mysql;
-use Phalcon\Config;
+use Phalcon\Config\Config;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\DiInterface;
 
