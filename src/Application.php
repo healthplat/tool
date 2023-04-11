@@ -3,6 +3,7 @@
 namespace Healthplat\Tool;
 
 use Healthplat\Tool\Providers\DatabaseProvider;
+use Healthplat\Tool\Providers\LoggerProvider;
 use Healthplat\Tool\Providers\RouteProvider;
 use Healthplat\Tool\Providers\ConfigProvider;
 
@@ -14,7 +15,8 @@ class Application extends \Phalcon\Mvc\Application
     private $providers = [
         ConfigProvider::class,
         RouteProvider::class,
-        DatabaseProvider::class
+        DatabaseProvider::class,
+        LoggerProvider::class,
     ];
 
     /**
