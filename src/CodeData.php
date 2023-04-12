@@ -15,6 +15,7 @@ class CodeData
     private $timeout;
     private $options;
     private $code;
+    private $codDir = "APP:CODE:";
 
     /**
      * 生成Code
@@ -41,8 +42,9 @@ class CodeData
         }
         $this->options = json_encode($options, JSON_UNESCAPED_UNICODE);
         $this->code = $this->uuid();
+        $key = $this->codDir . $this->code;
         try {
-            Di::getDefault()->get("redis")->set($this->code, $this->options, $this->timeout);
+            Di::getDefault()->get("redis")->set($key, $this->options, $this->timeout);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
         }
@@ -50,7 +52,7 @@ class CodeData
     }
 
     /**
-     * 生成Code
+     * 获取Code
      * @param $code
      * @return options
      * @throws CodeDataException
@@ -58,12 +60,13 @@ class CodeData
     public function get($code)
     {
         $this->code = $code;
-        $codeVal = Di::getDefault()->get("redis")->get($this->code);
+        $key = $this->codDir . $this->code;
+        $codeVal = Di::getDefault()->get("redis")->get($key);
         if (empty($codeVal)) {
             throw new Exception("获取code值为空", 500);
         }
         $this->options = json_decode($codeVal, TRUE);
-        Di::getDefault()->get("redis")->del($this->code);
+        Di::getDefault()->get("redis")->del($key);
         return $this->options;
 
     }
