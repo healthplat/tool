@@ -121,7 +121,7 @@ abstract class Struct implements StructInterface
         foreach ($reflect->getProperties() as $property) {
             $name = $property->getName();
             // 循环所有对像获取数据
-            $this->attributes[$name] = array_key_exists($name, $data) ? $data[$name] : null;
+            $this->attributes[$name] = array_key_exists($name, $data) ? $data[$name] : ($this->$name ?: null);
         }
     }
 
