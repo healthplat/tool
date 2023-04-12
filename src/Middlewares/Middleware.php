@@ -11,7 +11,7 @@ use Healthplat\Tool\Middlewares\MiddlewareInterface as HxMiddlewareInterface;
  * 业务逻辑抽像
  * @package Healthplat\Tool\Logics
  */
-abstract class Middleware implements HxMiddlewareInterface
+abstract class Middleware extends \Phalcon\Di\Injectable implements HxMiddlewareInterface
 {
     use ServiceTrait;
 
