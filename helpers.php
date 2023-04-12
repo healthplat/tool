@@ -94,3 +94,13 @@ if (!function_exists('getConfigPath')) {
         return getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'config';
     }
 }
+
+if (!function_exists('getLogPath')) {
+    /**
+     * @return Container
+     */
+    function getLogPath()
+    {
+        return getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'log';
+    }
+}

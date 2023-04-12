@@ -15,6 +15,7 @@ use RuntimeException;
  */
 class Client
 {
+
     /**
      * @var \Redis
      */
