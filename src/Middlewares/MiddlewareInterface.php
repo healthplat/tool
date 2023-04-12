@@ -1,6 +1,7 @@
 <?php
 namespace Healthplat\Tool\Middlewares;
 
+use Healthplat\Tool\Structs\StructInterface;
 use Phalcon\Mvc\Dispatcher;
 
 /**
@@ -9,9 +10,9 @@ use Phalcon\Mvc\Dispatcher;
 interface MiddlewareInterface
 {
     /**
-     * 结构体静态构造方法
-     * @param Dispatcher $dispatcher
-     * @return mixed
+     * @param array|null|object $payload 入参
+     *
+     * @return array|StructInterface
      */
-    public static function factory(Dispatcher $dispatcher);
+    public function run(Dispatcher $dispatcher);
 }
