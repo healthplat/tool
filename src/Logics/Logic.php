@@ -12,6 +12,9 @@ use stdClass;
 abstract class Logic extends \Phalcon\Di\Injectable implements LogicInterface
 {
     use ServiceTrait;
+
+    public $userId;
+
     /**
      * 结构体工厂
      * @param array|stdClass|null $payload
@@ -43,5 +46,8 @@ abstract class Logic extends \Phalcon\Di\Injectable implements LogicInterface
      */
     public function beforeRun()
     {
+        if (!empty($_SERVER['HTTP_X_USERID'])) {
+            $this->userId = $_SERVER['HTTP_X_USERID'];
+        }
     }
 }
