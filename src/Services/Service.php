@@ -65,6 +65,6 @@ class Service extends Injectable
             'next' => $array['next'],
             'last' => $array['last'],
         ];
-        return ['body' => $array, 'paging' => $paging];
+        return ['body' => $array['items'], 'paging' => $paging];
     }
 }
