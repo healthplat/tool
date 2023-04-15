@@ -6,6 +6,8 @@ use Healthplat\Tool\Validators\BooleanValidator;
 use Healthplat\Tool\Validators\DateValidator;
 use Phalcon\Di\Exception;
 use Phalcon\Filter\Validation;
+use Phalcon\Mvc\Model;
+use Phalcon\Mvc\ModelInterface;
 
 
 /**
@@ -36,6 +38,11 @@ abstract class Struct implements StructInterface
      */
     private $attributes = [];
     /**
+     * 结构体结构
+     * @var array
+     */
+    private $reflections;
+    /**
      * 结构体完整类名
      * <code>
      * $className = '\App\Structs\Results\Module\Row'
@@ -52,6 +59,7 @@ abstract class Struct implements StructInterface
         'integer' => \Healthplat\Tool\Validations\Validators\IntegerValidator::class,
         'string' => \Healthplat\Tool\Validations\Validators\StringValidator::class,
     ];
+    private $structName;
 
     /**
      * 结构体静态构造方法
@@ -59,23 +67,25 @@ abstract class Struct implements StructInterface
      * @param bool $end 将入参赋值之后是否检查必须字段
      * @return static
      */
-    public static function factory($data = null, $end = true)
+    public static function factory($data = null)
     {
-        return new static($data, $end);
+        return new static($data);
     }
 
     /**
      * 构造Struct结构体
      * @param null|array|object $data 入参数据类型
-     * @param bool $end 将入参赋值之后是否检查必须字段
      */
-    public function __construct($data, $end = true)
+    public function __construct($data)
     {
         $reflect = new \ReflectionClass($this);
+        $this->structName = $reflect->getName();
         // 检查各字段类型是否格式正确
         $this->checkParamFormat($reflect);
+        // 初始化结构体结构
+        $this->reflections = $this->initReflection($reflect);
         // 初始化数据
-        $this->initAttributes($reflect, $data);
+        $this->initAttributes($data);
         // 检查各个参数类型是否正确
         $this->checkParamType($reflect, $this->attributes);
         // 将数据赋值
@@ -102,26 +112,102 @@ abstract class Struct implements StructInterface
                 } elseif (is_a($structType, StructInterface::class, true)) {
                     $this->checkParamFormat(new \ReflectionClass($structType));
                 } else {
-                    throw new Exception('字段[' . $property->getName() . ']var类型错误，注意(结构体请写完整类名)');
+                    throw new Exception('结构体' . $this->structName . '字段[' . $property->getName() . ']var类型错误，注意(结构体请写完整类名)');
                 }
             }
         }
     }
 
     /**
+     * 获取反射结构
+     * @param \ReflectionClass $reflect
+     * @return array
+     * @throws \ReflectionException
+     */
+    private function initReflection(\ReflectionClass $reflect)
+    {
+        $reflections = [];
+        foreach ($reflect->getProperties() as $property) {
+            $comment = $property->getDocComment();
+            $thisRreflection = [];
+            $name = $property->getName();
+            $isRequired = false;
+            // 初始化结果
+            if (preg_match(self::$commentRegexpValidator, $comment, $ms) > 0) {
+                foreach ($ms as $value) {
+                    // 查询有没有requied
+                    if ($value == 'required') {
+                        $isRequired = true;
+                    }
+                }
+            }
+            // 获取参数类型
+            if (preg_match(self::$commentRegexpType, $comment, $m) > 0) {
+                $structType = $this->toSystemType($m[1]);;
+                $isArray = $m[2];
+                $object = [];
+                $isStruct = false;
+                if (is_a($structType, StructInterface::class, true)) {
+                    $isStruct = true;
+                    $object = $this->initReflection(new \ReflectionClass($structType));
+                }
+                $thisRreflection = [
+                    'name' => $name,
+                    'type' => $structType,
+                    'isStruct' => $isStruct,
+                    'isArray' => $isArray == '[]' ? true : false,
+                    'object' => $object,
+                    'isRequired' => $isRequired
+                ];
+            }
+            $reflections[] = $thisRreflection;
+        }
+        return $reflections;
+    }
+
+    /**
      * 初始化数据
      * @param $data
-     * @param \ReflectionClass $reflect
-     * @return void
+     * @return array
      */
-    private function initAttributes(\ReflectionClass $reflect, $data)
+    private function initAttributes($data)
     {
-        // 将对像转换成数组
-        $data = json_decode(json_encode($data), true);
-        foreach ($reflect->getProperties() as $property) {
-            $name = $property->getName();
-            // 循环所有对像获取数据
-            $this->attributes[$name] = array_key_exists($name, $data) ? $data[$name] : ($this->$name ?: null);
+        if (is_a($data, \stdClass::class, true)) {
+            $data = json_decode(json_encode($data), true);
+        }
+        // 判断数据是否是model
+        $isModel = is_a($data, ModelInterface::class, true);
+        foreach ($this->reflections as $reflection) {
+            $name = $reflection['name'];
+            $reflectionType = $reflection['type'];
+            if ($reflection['isArray']) {
+                $this->attributes[$name] = [];
+                // 假如数据正常
+                if (isset($data[$name]) && (is_array($data[$name]) || is_iterable($data[$name]))) {
+                    foreach ($data[$name] as $datum) {
+                        if ($reflection['isStruct']) {
+                            $this->attributes[$name][] = $reflectionType::factory($datum);
+                        } else {
+                            $this->attributes[$name][] = $datum;
+                        }
+                    }
+                } else {
+                    throw new Exception('结构体' . $this->structName . '的字段[' . $reflection['name'] . ']类型错误，正确类型为array类型', 500);
+                }
+            } else {
+                if ($reflection['isStruct']) {
+                    $this->attributes[$name] = $reflectionType::factory($data->$name);
+                } else {
+                    // 用对像搜索
+                    if (!$data) {
+                        $this->attributes[$name] = null;
+                    } else if (is_object($data) && $data) {
+                        $this->attributes[$name] = $data->$name;
+                    } else {
+                        $this->attributes[$name] = isset($data[$name]) ? $data[$name] : null;
+                    }
+                }
+            }
         }
     }
 
@@ -130,38 +216,29 @@ abstract class Struct implements StructInterface
      * @param \ReflectionClass $reflect
      * @return void
      */
-    private function checkParamType(\ReflectionClass $reflect, $attributes)
+    private function checkParamType()
     {
-        foreach ($reflect->getProperties() as $property) {
-            $comment = $property->getDocComment();
-            // 获取参数类型
-            if (preg_match(self::$commentRegexpType, $comment, $m) > 0) {
-                // 配置的类型
-                $structType = $m[1];
-                $isArray = $m[2];
-                // 假如没有配置类型 直接跳过
-                if (!$structType) {
-                    continue;
-                }
-                $structType = $this->toSystemType($structType);
-                $attrData = array_key_exists($property->getName(), $attributes) ? $attributes[$property->getName()] : null;
-                // 假如是结构体就递归判断结构体类型
-                if ($isArray == '[]' && $attrData) {
-                    $attrData = $attrData ? $attrData : [];
-                    foreach ($attrData as $attrDatum) {
-                        // 假如是结构体就递归判断结构体类型
-                        if (is_a($structType, StructInterface::class, true)) {
-                            // 递归判断结构体的字段
-                            $this->checkParamType(new \ReflectionClass($structType), $attrDatum);
-                        } else {
-                            $this->checkConditionType($property, $attrDatum);
+        foreach ($this->reflections as $reflection) {
+            if ($reflection['isArray']) {
+                // 判断数组结构
+                if ($reflection['isStruct']) {
+                    foreach ($this->attributes[$reflection['name']] as $attribute) {
+                        if (!is_a($attribute, StructInterface::class, true)) {
+                            throw new Exception('结构体' . $this->structName . '的字段[' . $reflection['name'] . ']类型错误，正确类型为[' . $structType . ']类型', 500);
                         }
                     }
-                } elseif (is_a($structType, StructInterface::class, true)) {
-                    // 假如是结构体递归判断
-                    $this->checkParamType(new \ReflectionClass($structType), $attributes[$property->getName()]);
                 } else {
-                    $this->checkConditionType($property, $attributes);
+                    foreach ($this->attributes[$reflection['name']] as $attribute) {
+                        $this->checkConditionType($reflection, $attribute);
+                    }
+                }
+            } else {
+                if ($reflection['isStruct']) {
+                    if (!is_a($reflection['type'], StructInterface::class, true)) {
+                        throw new Exception('结构体' . $this->structName . '的字段[' . $reflection['name'] . ']类型错误，正确类型为[' . $reflection['type'] . ']类型', 500);
+                    }
+                } else {
+                    $this->checkConditionType($reflection, $this->attributes[$reflection['name']]);
                 }
             }
         }
@@ -169,41 +246,28 @@ abstract class Struct implements StructInterface
 
     /**
      * 检查字段类型
-     * @param \ReflectionProperty $property
+     * @param $reflection
      * @param $attribute
      * @return void
      */
-    private function checkConditionType(\ReflectionProperty $property, $attribute)
+    private function checkConditionType($reflection, $attribute)
     {
-        $comment = $property->getDocComment();
-        // 获取参数类型
-        $isRequired = false;
-        $structType = null;
-        $name = $property->getName();
-        if (preg_match(self::$commentRegexpValidator, $comment, $ms) > 0) {
-            foreach ($ms as $value) {
-                // 查询有没有requied
-                if ($value == 'required') {
-                    $isRequired = true;
-                }
-            }
-        }
-        if (preg_match(self::$commentRegexpType, $comment, $m) > 0) {
-            // 配置的类型
-            $structType = $m[1];
-        }
         $validate = new Validation();
-        if ($isRequired) {
+        $structType = $reflection['type'];
+        $name = $reflection['name'];
+        if ($reflection['isRequired']) {
             $validate->add($name, new Validation\Validator\PresenceOf([
-                'message' => '字段[' . $name . ']为必填，请传入参数'
+                'message' => '结构体' . $this->structName . '字段[' . $name . ']为必填，请传入参数'
             ]));
         }
         if ($structType) {
             $validate->add($name, new $this->validatorConfig[$structType]([
-                'message' => '字段[' . $name . ']类型错误，正确类型为[' . $structType . ']类型',
+                'message' => '结构体' . $this->structName . '字段[' . $name . ']类型错误，正确类型为[' . $structType . ']类型',
             ]));
         }
-        $messages = $validate->validate($attribute);
+        $messages = $validate->validate([
+            $name => $attribute
+        ]);
         // 3. 验证过程有错误
         foreach ($messages as $message) {
             throw new Exception($message->getMessage(), 500);
@@ -215,42 +279,13 @@ abstract class Struct implements StructInterface
      * @param \ReflectionClass $reflect
      * @return void
      */
-    public function setData(\ReflectionClass $reflect)
+    public function setData()
     {
-        foreach ($reflect->getProperties() as $property) {
-            $name = $property->getName();
-            $comment = $property->getDocComment();
-            if (preg_match(self::$commentRegexpType, $comment, $m) > 0) {
-                // 配置的类型
-                $structType = $m[1];
-                $isArray = $m[2];
-                if (is_a($structType, StructInterface::class, true)) {
-                    // 如果是结构体就扶植结构体
-                    if ($isArray == '[]') {
-                        foreach ($this->attributes[$name] as $attribute) {
-                            $this->$name[] = $structType::factory($attribute);
-                        }
-                    } else {
-                        $this->$name = $structType::factory($this->attributes[$name]);
-                    }
-                } else {
-                    $this->$name = $this->attributes[$name];
-                }
-            }
+        foreach ($this->reflections as $reflection) {
+            $name = $reflection['name'];
+            $this->$name = $this->attributes[$name];
         }
     }
-
-
-    /**
-     * 入参是否传值
-     * @param string $name
-     * @return bool
-     */
-    public function isInput($name)
-    {
-        return isset($this->requirements[$name]);
-    }
-
 
     /**
      * 转为数组输出
@@ -261,12 +296,6 @@ abstract class Struct implements StructInterface
         $data = $this->attributes;
         return $this->parseArray($data);
     }
-
-    public function toJson($options = 0, $depth = 512)
-    {
-        // TODO: Implement toJson() method.
-    }
-
 
     /**
      * 简写类型转标准类型名称
@@ -292,7 +321,6 @@ abstract class Struct implements StructInterface
         }
         return $type;
     }
-
 
     /**
      * 以递归模式将结构转为数组
