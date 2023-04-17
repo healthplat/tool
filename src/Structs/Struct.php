@@ -201,7 +201,13 @@ abstract class Struct implements StructInterface
                 }
             } else {
                 if ($reflection['isStruct']) {
-                    $this->attributes[$name] = $reflectionType::factory($data->$name);
+                    $record = null;
+                    if (is_object($data)) {
+                        $record = $data->$name;
+                    } else {
+                        $record = $data[$name];
+                    }
+                    $this->attributes[$name] = $reflectionType::factory($record);
                 } else {
                     // 用对像搜索
                     if (!$data) {
