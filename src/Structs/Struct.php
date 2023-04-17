@@ -176,15 +176,20 @@ abstract class Struct implements StructInterface
             $data = json_decode(json_encode($data), true);
         }
         // 判断数据是否是model
-        $isModel = is_a($data, ModelInterface::class, true);
         foreach ($this->reflections as $reflection) {
             $name = $reflection['name'];
             $reflectionType = $reflection['type'];
             if ($reflection['isArray']) {
                 $this->attributes[$name] = [];
                 // 假如数据正常
-                if (isset($data[$name]) && (is_array($data[$name]) || is_iterable($data[$name]))) {
-                    foreach ($data[$name] as $datum) {
+                $record = null;
+                if (is_object($data)) {
+                    $record = $data->$name;
+                } else {
+                    $record = $data[$name];
+                }
+                if (isset($record) && (is_array($record) || is_iterable($record))) {
+                    foreach ($record as $datum) {
                         if ($reflection['isStruct']) {
                             $this->attributes[$name][] = $reflectionType::factory($datum);
                         } else {
