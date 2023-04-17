@@ -30,8 +30,7 @@ class Service extends Injectable
          * @var Query $query
          */
         $query = $builder->getQuery();
-        $array = json_decode(json_encode($query->execute()), true);
-        return $array;
+        return $query->execute();
     }
 
     /**
