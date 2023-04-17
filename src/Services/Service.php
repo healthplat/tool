@@ -30,8 +30,7 @@ class Service extends Injectable
          * @var Query $query
          */
         $query = $builder->getQuery();
-        $array = json_decode(json_encode($query->execute()), true);
-        return $array;
+        return $query->execute();
     }
 
     /**
@@ -56,15 +55,15 @@ class Service extends Injectable
             'page' => $page,
         ];
         $query = new QueryBuilder($param);
-        $array = json_decode(json_encode($query->paginate()), true);
+        $query = $query->paginate();
         $paging = [
-            'totalItems' => $array['total_items'],
-            'limit' => $array['limit'],
-            'first' => $array['first'],
-            'current' => $array['current'],
-            'next' => $array['next'],
-            'last' => $array['last'],
+            'totalItems' => $query->getTotalItems(),
+            'limit' => $query->getLimit(),
+            'first' => $query->getFirst(),
+            'current' => $query->getCurrent(),
+            'next' => $query->getNext(),
+            'last' => $query->getLast(),
         ];
-        return ['body' => $array['items'], 'paging' => $paging];
+        return ['body' => $query->getItems(), 'paging' => $paging];
     }
 }
