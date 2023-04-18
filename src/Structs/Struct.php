@@ -87,9 +87,9 @@ abstract class Struct implements StructInterface
         // 初始化数据
         $this->initAttributes($data);
         // 检查各个参数类型是否正确
-        $this->checkParamType($reflect, $this->attributes);
+        $this->checkParamType();
         // 将数据赋值
-        $this->setData($reflect);
+        $this->setData();
     }
 
     /**
@@ -174,6 +174,9 @@ abstract class Struct implements StructInterface
     {
         if (is_a($data, \stdClass::class, true)) {
             $data = json_decode(json_encode($data), true);
+        }
+        if (!$data) {
+            return;
         }
         // 判断数据是否是model
         foreach ($this->reflections as $reflection) {
@@ -294,7 +297,8 @@ abstract class Struct implements StructInterface
     {
         foreach ($this->reflections as $reflection) {
             $name = $reflection['name'];
-            $this->$name = $this->attributes[$name];
+            $thisAttribute = isset($this->attributes[$name]) ? $this->attributes[$name] : null;
+            $this->$name = $thisAttribute ?: $this->getDefaultData($thisAttribute, $reflection['type']);
         }
     }
 
@@ -306,6 +310,27 @@ abstract class Struct implements StructInterface
     {
         $data = $this->attributes;
         return $this->parseArray($data);
+    }
+
+    /**
+     * 获取默认值
+     * @param $data
+     * @param $type
+     * @return false|int|string|null
+     */
+    private function getDefaultData($data, $type)
+    {
+        switch ($type) {
+            case 'bool' :
+                return false;
+            case 'int':
+            case 'float' :
+                return 0;
+            case 'str' :
+                return '';
+            default:
+                return null;
+        }
     }
 
     /**
