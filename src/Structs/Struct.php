@@ -249,7 +249,9 @@ abstract class Struct implements StructInterface
                     }
                 } else {
                     foreach ($this->attributes[$reflection['name']] as $attribute) {
-                        $this->checkConditionType($reflection, $attribute);
+                        if ($attribute) {
+                            $this->checkConditionType($reflection, $attribute);
+                        }
                     }
                 }
             } else {
@@ -258,7 +260,9 @@ abstract class Struct implements StructInterface
                         throw new Exception('结构体' . $this->structName . '的字段[' . $reflection['name'] . ']类型错误，正确类型为[' . $reflection['type'] . ']类型', 500);
                     }
                 } else {
-                    $this->checkConditionType($reflection, $this->attributes[$reflection['name']]);
+                    if ($this->attributes[$reflection['name']]) {
+                        $this->checkConditionType($reflection, $this->attributes[$reflection['name']]);
+                    }
                 }
             }
         }
@@ -304,7 +308,7 @@ abstract class Struct implements StructInterface
         foreach ($this->reflections as $reflection) {
             $name = $reflection['name'];
             $thisAttribute = isset($this->attributes[$name]) ? $this->attributes[$name] : null;
-            $this->$name = $thisAttribute ?: $this->getDefaultData($thisAttribute, $reflection['type']);
+            $this->$name = $thisAttribute ?: $this->getDefaultData($thisAttribute, $reflection['type'], $reflection['isArray']);
         }
     }
 
@@ -322,9 +326,10 @@ abstract class Struct implements StructInterface
      * 获取默认值
      * @param $data
      * @param $type
+     * @param $isArray
      * @return false|int|string|null
      */
-    private function getDefaultData($data, $type)
+    private function getDefaultData($data, $type, $isArray)
     {
         switch ($type) {
             case 'bool' :
@@ -335,6 +340,9 @@ abstract class Struct implements StructInterface
             case 'str' :
                 return '';
             default:
+                if ($isArray) {
+                    return [];
+                }
                 return null;
         }
     }
