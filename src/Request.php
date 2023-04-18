@@ -1,9 +1,11 @@
 <?php
+
 namespace Healthplat\Tool;
 
 use Phalcon\Http\Request\Exception;
 use Phalcon\Http\Request as PhalconRequest;
 use stdClass;
+
 /**
  * 覆盖HTTP请求
  * @package Healthplat\Tool
@@ -40,6 +42,9 @@ class Request extends PhalconRequest
     public function getJsonRawBody($associative = null)
     {
         $body = $this->getRawBody();
+        if (!$body) {
+            throw new \Exception('入参为空，请确保是json类型', 500);
+        }
         // 1. 转为Array/StdClass
         $data = json_decode($body, $associative);
         if (json_last_error() === JSON_ERROR_NONE) {
@@ -47,10 +52,7 @@ class Request extends PhalconRequest
         }
         // 2. Array错误
         if ($associative) {
-            return [
-                '_raw' => $body,
-                '_err' => json_last_error_msg()
-            ];
+            throw new \Exception('入参格式错误，请确保是json类型', 500);
         }
         // 3. JSON错误
         $data = new stdClass();
