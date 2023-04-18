@@ -87,7 +87,7 @@ abstract class Struct implements StructInterface
         // 初始化数据
         $this->initAttributes($data);
         // 检查各个参数类型是否正确
-        $this->checkParamType();
+        $this->checkParamType($data);
         // 将数据赋值
         $this->setData();
     }
@@ -230,8 +230,14 @@ abstract class Struct implements StructInterface
      * @param \ReflectionClass $reflect
      * @return void
      */
-    private function checkParamType()
+    private function checkParamType($data)
     {
+        if (is_a($data, \stdClass::class, true)) {
+            $data = json_decode(json_encode($data), true);
+        }
+        if (!$data) {
+            return;
+        }
         foreach ($this->reflections as $reflection) {
             if ($reflection['isArray']) {
                 // 判断数组结构
