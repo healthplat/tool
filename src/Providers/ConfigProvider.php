@@ -16,7 +16,7 @@ class ConfigProvider implements ServiceProviderInterface
     public function register(\Phalcon\Di\DiInterface $di): void
     {
         $di->setShared('config', function () {
-            $env = $_ENV['APP_ENV'] ?: 'development';
+            $env = $_ENV['APP_ENV'] ?? 'development';
             $config = new Config([]);
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(CONFIG_PATH), \RecursiveIteratorIterator::SELF_FIRST);
             $helper = new HelperFactory();
