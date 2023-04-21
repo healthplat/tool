@@ -6,7 +6,6 @@ tmp/
 !tmp/.gitkeep
 vendor
 composer.lock
-console
 Dockerfile
 dockerfile.sh
 server
