@@ -18,12 +18,12 @@ class ConfigProvider implements ServiceProviderInterface
         $di->setShared('config', function () {
             $env = env('APP_ENV', 'development');
             $config = new Config([]);
-            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(getConfigPath()), \RecursiveIteratorIterator::SELF_FIRST);
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(CONFIG_PATH), \RecursiveIteratorIterator::SELF_FIRST);
             $helper = new HelperFactory();
             foreach ($iterator as $item) {
                 if ($helper->endsWith($item, '.php', false)) {
                     $name = str_replace([
-                        getConfigPath() . DIRECTORY_SEPARATOR,
+                        CONFIG_PATH . DIRECTORY_SEPARATOR,
                         '.php'
                     ], '', $item);
                     $data = include $item;

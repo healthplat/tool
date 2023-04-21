@@ -18,12 +18,12 @@ class RouteProvider implements ServiceProviderInterface
             function () {
                 // 启用注解路由，此时默认路由关闭
                 $router = new Router\Annotations(false);
-                $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(getAppPath() . DIRECTORY_SEPARATOR . 'Controllers'), \RecursiveIteratorIterator::SELF_FIRST);
+                $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(APP_PATH . DIRECTORY_SEPARATOR . 'Controllers'), \RecursiveIteratorIterator::SELF_FIRST);
 
                 foreach ($iterator as $item) {
                     $helper = new HelperFactory();
                     if ($helper->endsWith($item, 'Controller.php', false)) {
-                        $name = str_replace([getAppPath() . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR, 'Controller.php'], '', $item);
+                        $name = str_replace([APP_PATH . DIRECTORY_SEPARATOR . 'Controllers' . DIRECTORY_SEPARATOR, 'Controller.php'], '', $item);
                         if ($name) {
                             $name = str_replace(DIRECTORY_SEPARATOR, '\\', $name);
                             $router->addResource('App\\Controllers\\' . $name);

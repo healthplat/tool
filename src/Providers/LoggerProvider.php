@@ -24,10 +24,10 @@ class LoggerProvider implements ServiceProviderInterface
                 $month = date('Y-m');
                 $date = date('Y-m-d');
                 if ($di->getConfig()->path('logger.splitDir', false)) {
-                    $logPath = getLogPath() . '/' . $logCategory . '/' . $month;
+                    $logPath = LOG_PATH . '/' . $logCategory . '/' . $month;
                     $logFile = $logPath . '/' . $date . '.log';
                 } else {
-                    $logPath = getLogPath() . '/' . $logCategory;
+                    $logPath = LOG_PATH . '/' . $logCategory;
                     $logFile = $logPath . '/' . $date . '.log';
                 }
                 try {
