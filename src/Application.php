@@ -38,5 +38,20 @@ class Application extends \Phalcon\Mvc\Application
         // request请求对象初始化
         $container->setShared('request', new Request());
         $this->useImplicitView(false);
+        // 初始化env环境
+        $this->initEnv();
+    }
+
+    /**
+     * Init Env from .env
+     * @return void
+     */
+    public function initEnv()
+    {
+        $envFile = APP_PATH.'/../.env';
+        if (file_exists($envFile) && class_exists('Symfony\\Component\\Dotenv\\Dotenv')) {
+            $dotenv = new \Symfony\Component\Dotenv\Dotenv();
+            $dotenv->load($envFile);
+        }
     }
 }
