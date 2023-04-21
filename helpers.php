@@ -74,33 +74,3 @@ if (!function_exists('value')) {
         return $value instanceof Closure ? $value() : $value;
     }
 }
-
-if (!function_exists('getAppPath')) {
-    /**
-     * @return Container
-     */
-    function getAppPath()
-    {
-        return getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'app';
-    }
-}
-
-if (!function_exists('getConfigPath')) {
-    /**
-     * @return Container
-     */
-    function getConfigPath()
-    {
-        return getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'config';
-    }
-}
-
-if (!function_exists('getLogPath')) {
-    /**
-     * @return Container
-     */
-    function getLogPath()
-    {
-        return getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'log';
-    }
-}
