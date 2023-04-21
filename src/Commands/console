@@ -1,11 +1,5 @@
 #!/usr/bin/env php
 <?php
-/**
- * 控制台入口11
- *
- * @author    XueronNi <xueronni@uniondrug.cn>
- * @copyright 2018
- */
 set_time_limit(0);
 date_default_timezone_set('PRC');
 
