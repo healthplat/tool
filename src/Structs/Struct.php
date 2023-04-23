@@ -89,7 +89,7 @@ abstract class Struct implements StructInterface
         // 检查各个参数类型是否正确
         $this->checkParamType($data);
         // 将数据赋值
-        $this->setData();
+//        $this->setData();
     }
 
     /**
@@ -145,20 +145,26 @@ abstract class Struct implements StructInterface
             if (preg_match(self::$commentRegexpType, $comment, $m) > 0) {
                 $structType = $this->toSystemType($m[1]);;
                 $isArray = $m[2];
-                $object = [];
+//                $object = [];
                 $isStruct = false;
                 if (is_a($structType, StructInterface::class, true)) {
                     $isStruct = true;
-                    $object = $this->initReflection(new \ReflectionClass($structType));
+//                    $object = $this->initReflection(new \ReflectionClass($structType));
                 }
                 $thisRreflection = [
                     'name' => $name,
                     'type' => $structType,
                     'isStruct' => $isStruct,
                     'isArray' => $isArray == '[]' ? true : false,
-                    'object' => $object,
+//                    'object' => $object,
                     'isRequired' => $isRequired
                 ];
+                // 添加默认值
+                $this->attributes[$name] = $this->$name ?: $this->getDefaultData($structType, $thisRreflection['isArray']);
+                unset($this->$name);
+//                if (is_null($this->$name)) {
+//                    $this->$name = $this->getDefaultData($structType, $thisRreflection['isArray']);
+//                }
             }
             $reflections[] = $thisRreflection;
         }
@@ -204,21 +210,19 @@ abstract class Struct implements StructInterface
                 }
             } else {
                 if ($reflection['isStruct']) {
-                    $record = null;
+                    $record = [];
                     if (is_object($data)) {
                         $record = $data->$name;
-                    } else {
+                    } else if (is_array($data)) {
                         $record = $data[$name];
                     }
                     $this->attributes[$name] = $reflectionType::factory($record);
                 } else {
                     // 用对像搜索
-                    if (!$data) {
-                        $this->attributes[$name] = null;
-                    } else if (is_object($data) && $data) {
-                        $this->attributes[$name] = $data->$name;
+                    if (is_object($data) && $data) {
+                        $this->attributes[$name] = $data->$name ?? $this->$name;
                     } else {
-                        $this->attributes[$name] = isset($data[$name]) ? $data[$name] : null;
+                        $this->attributes[$name] = $data[$name] ?? $this->$name;
                     }
                 }
             }
@@ -322,22 +326,44 @@ abstract class Struct implements StructInterface
         return json_decode(json_encode($data), true);
     }
 
+
+
+    /**
+     * @param string $name
+     * @return mixed
+     * @throws \Uniondrug\Structs\Exception
+     */
+    public function & __get($name)
+    {
+        return $this->attributes[$name];
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @throws Exception
+     */
+    public function __set($name, $value)
+    {
+        $this->attributes[$name] = $value;
+    }
+
+
     /**
      * 获取默认值
-     * @param $data
      * @param $type
      * @param $isArray
      * @return false|int|string|null
      */
-    private function getDefaultData($data, $type, $isArray)
+    private function getDefaultData($type, $isArray)
     {
         switch ($type) {
-            case 'bool' :
+            case 'boolean' :
                 return false;
             case 'int':
-            case 'float' :
+            case 'double' :
                 return 0;
-            case 'str' :
+            case 'string' :
                 return '';
             default:
                 if ($isArray) {
