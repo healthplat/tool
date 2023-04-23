@@ -81,7 +81,7 @@ abstract class Struct implements StructInterface
         $reflect = new \ReflectionClass($this);
         $this->structName = $reflect->getName();
         // 检查各字段类型是否格式正确
-        $this->checkParamFormat($reflect);
+//        $this->checkParamFormat($reflect);
         // 初始化结构体结构
         $this->reflections = $this->initReflection($reflect);
         // 初始化数据
