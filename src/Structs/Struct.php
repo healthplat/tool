@@ -367,6 +367,16 @@ abstract class Struct implements StructInterface
         $this->attributes[$name] = $value;
     }
 
+    /**
+     * 检查属性是否已定义
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return isset($this->attributes[$name]);
+    }
+
 
     /**
      * 获取默认值
