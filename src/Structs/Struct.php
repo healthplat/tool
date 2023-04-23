@@ -2,6 +2,7 @@
 
 namespace Healthplat\Tool\Structs;
 
+use App\Structs\Requests\TestRequest;
 use Healthplat\Tool\Validators\BooleanValidator;
 use Healthplat\Tool\Validators\DateValidator;
 use Phalcon\Di\Exception;
@@ -226,6 +227,7 @@ abstract class Struct implements StructInterface
                     }
                 }
             }
+
         }
     }
 
@@ -323,7 +325,24 @@ abstract class Struct implements StructInterface
     public function toArray()
     {
         $data = $this->attributes;
-        return json_decode(json_encode($data), true);
+        return $this->parseArray($data);
+    }
+
+    /**
+     * 以递归模式将结构转为数组
+     * @param array $data
+     * @return array
+     */
+    private function parseArray($data)
+    {
+        foreach ($data as $name => & $value) {
+            if (is_array($value)) {
+                $value = $this->parseArray($value);
+            } else if (is_object($value) && method_exists($value, 'toArray')) {
+                $value = $value->toArray();
+            }
+        }
+        return $data;
     }
 
 
