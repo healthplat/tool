@@ -361,6 +361,7 @@ abstract class Struct implements StructInterface
             case 'boolean' :
                 return false;
             case 'int':
+            case 'integer':
             case 'double' :
                 return 0;
             case 'string' :
