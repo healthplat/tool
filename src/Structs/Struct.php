@@ -194,9 +194,9 @@ abstract class Struct implements StructInterface
                 // 假如数据正常
                 $record = null;
                 if (is_object($data)) {
-                    $record = $data->$name;
+                    $record = isset($data->$name) ? $data->$name : [];
                 } else {
-                    $record = $data[$name];
+                    $record = isset($data[$name]) ? $data[$name] : [];
                 }
                 if (isset($record) && (is_array($record) || is_iterable($record))) {
                     foreach ($record as $datum) {
@@ -319,6 +319,16 @@ abstract class Struct implements StructInterface
     }
 
     /**
+     * 检查属性是否已定义
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return isset($this->attributes[$name]);
+    }
+
+    /**
      * 转为数组输出
      * @return array
      */
@@ -346,7 +356,6 @@ abstract class Struct implements StructInterface
     }
 
 
-
     /**
      * @param string $name
      * @return mixed
@@ -365,16 +374,6 @@ abstract class Struct implements StructInterface
     public function __set($name, $value)
     {
         $this->attributes[$name] = $value;
-    }
-
-    /**
-     * 检查属性是否已定义
-     * @param string $name
-     * @return bool
-     */
-    public function __isset($name)
-    {
-        return isset($this->attributes[$name]);
     }
 
 
