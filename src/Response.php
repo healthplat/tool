@@ -17,6 +17,18 @@ class Response
     const DATA_TYPE_OBJECT = 'OBJECT';
     const DATA_TYPE_ERROR = 'ERROR';
 
+    private $phalconResponse;
+
+    public function __construct()
+    {
+        $this->phalconResponse = new PhalconResponse();
+    }
+
+    public function getPhalconResponse()
+    {
+        return $this->phalconResponse;
+    }
+
     /**
      * 返回错误Response
      * @param string $error 错误原因
@@ -85,7 +97,7 @@ class Response
          * 2. Response
          * @var Response $response
          */
-        return (new PhalconResponse())->setJsonContent([
+        return $this->phalconResponse->setJsonContent([
             'errno' => (string)$errno,
             'error' => (string)$error,
             'dataType' => $dataType,
