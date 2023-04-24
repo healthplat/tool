@@ -18,7 +18,7 @@ class LoggerProvider implements ServiceProviderInterface
      */
     public function register(\Phalcon\Di\DiInterface $di): void
     {
-        $di->setShared(
+        $di->set(
             'logger',
             function ($logCategory = 'app') use ($di){
                 $month = date('Y-m');
