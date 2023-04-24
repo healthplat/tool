@@ -51,7 +51,9 @@ class HttpClient extends \GuzzleHttp\Client
             } else if ($duration >= self::SLOW_SECONDS) {
                 $this->container->get('logger')->warning(sprintf("[d=%.06f]HttpClient以{%s}请求{%s}较慢, 超过{%s}秒阀值", $duration, $method, $uri, self::SLOW_SECONDS));
             }
-            $this->container->get('logger')->info(sprintf("[d=%.06f]HttpClient以{%s}请求{%s}完成,返回结果：{%s}", $duration, $method, $uri, $response->getBody()->getContents()));
+            if (isset($response) && $response) {
+                $this->container->get('logger')->info(sprintf("[d=%.06f]HttpClient以{%s}请求{%s}完成,返回结果：{%s}", $duration, $method, $uri, $response->getBody()->getContents()));
+            }
         }
     }
 
