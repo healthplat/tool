@@ -53,7 +53,7 @@ class HttpClient extends \GuzzleHttp\Client
             }
             if (isset($response) && $response) {
                 $this->container->get('logger')->info(sprintf("[d=%.06f]HttpClient以{%s}请求{%s}完成,返回结果：{%s}", $duration, $method, $uri, $response->getBody()->getContents()));
-                return $response;
+                $response->getBody()->rewind();
             }
         }
     }
