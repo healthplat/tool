@@ -8,10 +8,9 @@ class ProfilerProvider implements ServiceProviderInterface
 {
     public function register(\Phalcon\Di\DiInterface $di): void
     {
-        $di->getShared('profiler',function (){
+        $di->setShared('profiler', function () {
             return new \Phalcon\Db\Profiler();
         });
-
     }
 
 }
