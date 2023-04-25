@@ -16,6 +16,7 @@ class SqlMiddleware extends Middleware
      */
     public function run(Dispatcher $dispatcher)
     {
+        $requestId = $this->serviceServer->getPhalconResponse()->getHeaders()->get('X-REQUEST-Id');
         $profiler = $this->di->getProfiler();
         // 获取所有记录的查询
         $profiles = $profiler->getProfiles();
@@ -27,10 +28,10 @@ class SqlMiddleware extends Middleware
             $time = $profile->getTotalElapsedSeconds();
             if ($time > 1) {
                 // 将查询写入日志文件
-                $this->di->getLogger('sql-out')->info(sprintf('%s (%s s): %s', $sql, $time, json_encode($params)));
+                $this->di->getLogger('app')->info(sprintf('请求结束,请求链[' . $requestId . '], 请求超时- %s (%s s): %s', $sql, $time, json_encode($params)));
             } else {
                 // 将查询写入日志文件
-                $this->di->getLogger('sql')->info(sprintf('%s (%s s): %s', $sql, $time, json_encode($params)));
+                $this->di->getLogger('app')->info(sprintf('请求结束,请求链[' . $requestId . '], %s (%s s): %s', $sql, $time, json_encode($params)));
             }
         }
         return true;

@@ -58,32 +58,35 @@ class DatabaseProvider implements ServiceProviderInterface
          * @var Container $di
          */
         $config = $di->getConfig()->path('database.connection');
+        $dumpSql = $di->getConfig()->path('database.dumpSql') ?? false;
         if (!($config instanceof Config)) {
             return;
         }
         $adapter = $di->getConfig()->path('database.adapter');
         $name = 'db';
         $pdo = $this->pdo[$adapter];
-        $di->setShared($name, function () use ($di, $config, $name, $pdo) {
+        $di->setShared($name, function () use ($di, $config, $name, $pdo, $dumpSql) {
             unset($config->adapter);
-            $eventsManager  = new Manager();
-            $profiler = $di->getProfiler();
-            // 注册事件，以捕获执行的 SQL 查询
-            $eventsManager->attach('db', function ($event, $connection) use ($profiler) {
-                if ($event->getType() == 'beforeQuery') {
-                    $profiler->startProfile(
-                        $connection->getSQLStatement(),
-                        $connection->getSQLVariables(),
-                        $connection->getSQLBindTypes()
-                    );
-                }
-                if ($event->getType() == 'afterQuery') {
-                    $profiler->stopProfile();
-                }
-            });
             $dn = isset($config->dbname) ? $config->dbname : 'unknown';
             $db = new $pdo($config->toArray());
-            $db->setEventsManager($eventsManager);
+            if ($dumpSql) {
+                $eventsManager = new Manager();
+                $profiler = $di->getProfiler();
+                // 注册事件，以捕获执行的 SQL 查询
+                $eventsManager->attach('db', function ($event, $connection) use ($profiler) {
+                    if ($event->getType() == 'beforeQuery') {
+                        $profiler->startProfile(
+                            $connection->getSQLStatement(),
+                            $connection->getSQLVariables(),
+                            $connection->getSQLBindTypes()
+                        );
+                    }
+                    if ($event->getType() == 'afterQuery') {
+                        $profiler->stopProfile();
+                    }
+                });
+                $db->setEventsManager($eventsManager);
+            }
             return $db;
         });
     }
