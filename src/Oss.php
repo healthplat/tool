@@ -50,8 +50,8 @@ class Oss
             $object = ($object ? ($object . '/') : '') . uniqid() . '.' . $file->getExtension();
         }
         $result = $this->ossClient->uploadFile($bucket, $object, $file->getTempName());
-        if (isset($result['url']) && $result['url']) {
-            return $result['url'];
+        if (isset($result['info']['url']) && $result['info']['url']) {
+            return $result['info']['url'];
         } else {
             throw new Exception('文件传输失败', 500);
         }
@@ -80,8 +80,8 @@ class Oss
             $object = ($object ? ($object . '/') : '') . uniqid();
         }
         $result = $this->ossClient->putObject($bucket, $object, $content);
-        if (isset($result['url']) && $result['url']) {
-            return $result['url'];
+        if (isset($result['info']['url']) && $result['info']['url']) {
+            return $result['info']['url'];
         } else {
             throw new Exception('文件传输失败', 500);
         }
