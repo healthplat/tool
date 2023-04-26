@@ -42,9 +42,9 @@ class Request extends PhalconRequest
     public function getJsonRawBody($associative = null)
     {
         $body = $this->getRawBody();
-        if (!$body) {
-            throw new \Exception('入参为空，请确保是json类型', 500);
-        }
+//        if (!$body) {
+//            throw new \Exception('入参为空，请确保是json类型', 500);
+//        }
         // 1. 转为Array/StdClass
         $data = json_decode($body, $associative);
         if (json_last_error() === JSON_ERROR_NONE) {
