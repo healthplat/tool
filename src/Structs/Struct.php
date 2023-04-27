@@ -2,13 +2,8 @@
 
 namespace Healthplat\Tool\Structs;
 
-use App\Structs\Requests\TestRequest;
-use Healthplat\Tool\Validators\BooleanValidator;
-use Healthplat\Tool\Validators\DateValidator;
 use Phalcon\Di\Exception;
 use Phalcon\Filter\Validation;
-use Phalcon\Mvc\Model;
-use Phalcon\Mvc\ModelInterface;
 
 
 /**
@@ -91,6 +86,16 @@ abstract class Struct implements StructInterface
         $this->checkParamType($data);
         // 将数据赋值
 //        $this->setData();
+        $this->afterFactory();
+    }
+
+    /**
+     * 完成之后的操作
+     * @return mixed|void
+     */
+    public function afterFactory()
+    {
+        
     }
 
     /**
