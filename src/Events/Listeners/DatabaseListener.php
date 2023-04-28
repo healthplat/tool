@@ -20,14 +20,11 @@ class DatabaseListener extends Injectable
 
     /**
      * DatabaseListener constructor.
-     * @param int|null $error
-     * @param int|null $warning
      */
-    public function __construct(int $error = null, int $warning = null)
+    public function __construct()
     {
         $this->profiler = new Profiler();
-        $error === null || $this->durationError = (double)($error / 1000);
-        $warning === null || $this->durationWarning = (double)($warning / 1000);
+
     }
 
     /**
