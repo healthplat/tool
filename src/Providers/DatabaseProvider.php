@@ -34,13 +34,14 @@ class DatabaseProvider implements ServiceProviderInterface
         $pdo = $this->pdo[$adapter];
         $di->setShared($name, function () use ($di, $config, $name, $pdo, $dumpSql) {
             unset($config->adapter);
-            $dn = isset($config->dbname) ? $config->dbname : 'unknown';
             $db = new $pdo($config->toArray());
-            $db->setEventsManager($di->getEventsManager());
+            if ($dumpSql) {
+                // 新的事件管理器
+                $eventsManager = new \Phalcon\Events\Manager();
+                $eventsManager->attach($name, new DatabaseListener());
+                $db->setEventsManager($eventsManager);
+            }
             return $db;
         });
-        if ($dumpSql) {
-            $di->getEventsManager()->attach($name, new DatabaseListener());
-        }
     }
 }
