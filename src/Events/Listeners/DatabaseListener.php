@@ -47,7 +47,6 @@ class DatabaseListener extends Injectable
             $sql = $connection->getSQLStatement();
         }
         if (strpos($sql, 'FROM `INFORMATION_SCHEMA`') !== false || strpos($sql, 'SHOW FULL COLUMNS FROM') !== false) {
-            return false; // 返回false表示不执行该SQL语句
         } else {
             $this->logger->info("SQL完成-SQL执行时间[".$duration."]," . $sql);
         }
