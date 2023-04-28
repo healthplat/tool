@@ -20,10 +20,14 @@ class DatabaseListener extends Injectable
 
     /**
      * DatabaseListener constructor.
+     * @param int|null $error
+     * @param int|null $warning
      */
-    public function __construct()
+    public function __construct(int $error = null, int $warning = null)
     {
         $this->profiler = new Profiler();
+        $error === null || $this->durationError = (double)($error / 1000);
+        $warning === null || $this->durationWarning = (double)($warning / 1000);
     }
 
     /**
@@ -41,14 +45,14 @@ class DatabaseListener extends Injectable
         $duration = (double)$profile->getTotalElapsedSeconds();
         // 1. logger内容
         if ($connection instanceof Mysql) {
-            $sql = $connection->getListenerSQLStatment();
+            $sql = $connection->getSQLStatement().','.json_encode($connection->getSqlVariables());
         } else {
             $sql = $connection->getSQLStatement();
         }
         if (strpos($sql, 'FROM `INFORMATION_SCHEMA`') !== false || strpos($sql, 'SHOW FULL COLUMNS FROM') !== false) {
+            return false; // 返回false表示不执行该SQL语句
         } else {
-            $requestId = $this->request->getHeader('X-REQUEST-Id');
-            $this->logger->info("请求链[$requestId],SQL执行时间[".$duration."],SQL完成 - " . $sql);
+            $this->logger->info("SQL完成-SQL执行时间[".$duration."]," . $sql);
         }
     }
 
