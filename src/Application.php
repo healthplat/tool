@@ -14,7 +14,6 @@ use Healthplat\Tool\Providers\ConfigProvider;
 class Application extends \Phalcon\Mvc\Application
 {
     private $providers = [
-        ProfilerProvider::class,
         ConfigProvider::class,
         RouteProvider::class,
         DatabaseProvider::class,

@@ -95,7 +95,7 @@ abstract class Struct implements StructInterface
      */
     public function afterFactory()
     {
-        
+
     }
 
     /**
