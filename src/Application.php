@@ -81,7 +81,7 @@ class Application extends \Phalcon\Mvc\Application
                 'error' => (string)$e->getMessage(),
                 'dataType' => 'error',
                 'data' => (object)[],
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
             $logger->info('请求结束,请求链[' . $requestId . '],请求出参[' . $result . ']');
             $this->response->setContent($result);
             return $this->response;
