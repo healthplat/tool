@@ -2,7 +2,7 @@
 <?php
 set_time_limit(0);
 date_default_timezone_set('PRC');
-
+error_reporting(0);
 // autoload composer
 $autoload = __DIR__ . '/../../../../../vendor/autoload.php';
 if (file_exists($autoload)) {
