@@ -80,7 +80,7 @@ class Application extends \Phalcon\Mvc\Application
         } catch (\Exception $e) {
             $requestId = $this->response->getHeaders()->get('X-REQUEST-Id');
             $result = json_encode([
-                'errno' => (string)$e->getCode(),
+                'errno' => (string)$e->getCode() ?? 1,
                 'error' => (string)$e->getMessage(),
                 'dataType' => 'error',
                 'data' => (object)[],
