@@ -166,7 +166,7 @@ abstract class Struct implements StructInterface
                     'isRequired' => $isRequired
                 ];
                 // 添加默认值
-                $this->attributes[$name] = $this->$name ?: $this->getDefaultData($structType, $thisRreflection['isArray']);
+                $this->attributes[$name] = $this->$name ?? $this->getDefaultData($structType, $thisRreflection['isArray']);
                 unset($this->$name);
 //                if (is_null($this->$name)) {
 //                    $this->$name = $this->getDefaultData($structType, $thisRreflection['isArray']);
