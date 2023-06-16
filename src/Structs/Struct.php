@@ -220,7 +220,7 @@ abstract class Struct implements StructInterface
                     if (is_object($data)) {
                         $record = $data->$name;
                     } else if (is_array($data)) {
-                        $record = $data[$name];
+                        $record = $data[$name] ?? [];
                     }
                     $this->attributes[$name] = $reflectionType::factory($record);
                 } else {
