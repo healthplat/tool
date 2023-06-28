@@ -43,6 +43,16 @@ class Application extends \Phalcon\Mvc\Application
         $this->useImplicitView(false);
         // 初始化env环境
         $this->initEnv();
+        // 报错等级时区设置
+        $env = $_ENV['APP_ENV'] ?? 'development';
+        if ($env == 'production') {
+            error_reporting(0);
+        } else if ($env == 'testing') {
+            error_reporting(E_ERROR);
+        } else {
+            error_reporting(E_ALL);
+        }
+        date_default_timezone_set("Asia/Shanghai");
     }
 
     /**
