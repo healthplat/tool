@@ -29,6 +29,8 @@ class Application extends \Phalcon\Mvc\Application
      */
     public function __construct(\Phalcon\Di\DiInterface $container = null)
     {
+        // 初始化env环境
+        $this->initEnv();
         // 初始化服务
         foreach ($this->providers as $provider) {
             (new $provider())->register($container);
@@ -41,8 +43,6 @@ class Application extends \Phalcon\Mvc\Application
         // request请求对象初始化
         $container->setShared('request', new Request());
         $this->useImplicitView(false);
-        // 初始化env环境
-        $this->initEnv();
         // 报错等级时区设置
         $env = $_ENV['APP_ENV'] ?? 'development';
         if ($env == 'production') {
