@@ -184,7 +184,7 @@ abstract class Struct implements StructInterface
      */
     private function initAttributes($data)
     {
-        if (is_a($data, \stdClass::class, true)) {
+        if (gettype($data) == \stdClass::class) {
             $data = json_decode(json_encode($data), true);
         }
         if (!$data) {
